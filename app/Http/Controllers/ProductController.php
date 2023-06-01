@@ -2,43 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
+use GuzzleHttp\Psr7\Response;
 
 class ProductController extends Controller
 {
-
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return "index";
+        return ProductResource::collection(Product::all());
     }
 
+    // not underderstand
     public function create()
     {
-        return "create";
+        // Display the form to create a new product
+        return view('product.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreProductRequest $request)
     {
-        return "store";
+        $product = Product::create($request->validated());
+        return ProductResource::make( $product ); 
     }
 
-    public function show(string $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Product $product)
     {
-        return "show";
+        return ProductResource::make( $product );
     }
 
-    public function edit(string $id)
+    // not underderstand
+    public function edit($id)
     {
-        return "edit";
+        // Find the product by ID
+        $product = Product::findOrFail($id);
+
+        // Display the form to edit an existing product
+        return view('product.edit', compact('product'));
+    }
+    
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateProductRequest $request, Product $product)
+    {
+        $product->update($request->validated());
+        return ProductResource::make( $product );
     }
 
-    public function update(Request $request, string $id)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Product $product)
     {
-        return "update";
-    }
-
-    public function destroy(string $id)
-    {
-        return "destroy";
+        $product->delete();
+        return Response()->json([
+            'deleted'=> 'success'
+        ]);
     }
 }

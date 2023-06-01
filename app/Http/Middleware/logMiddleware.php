@@ -4,9 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
-class LogRequestMiddleware
+use Symfony\Component\HttpFoundation\Response;
+
+class logMiddleware
 {
     /**
      * Handle an incoming request.
@@ -14,11 +15,12 @@ class LogRequestMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-    {
-        $method = $request->method();
-        $url = $request->fullUrl();
-        Log::info("Request Method: $method");
-        Log::info("Request URL: $url");
+    { 
+        Log::build([
+            'driver' => 'single',
+            'path' => storage_path('logs/method-url/method-url.log'),
+        ])->info("{$request->method()}: {$request->url()}"); 
+
         return $next($request);
     }
 }
